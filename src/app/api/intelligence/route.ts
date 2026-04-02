@@ -13,7 +13,7 @@ const schemaConfig: any = {
 };
 
 const modelJson = genAI.getGenerativeModel({ 
-  model: "gemini-1.5-pro",
+  model: "gemini-2.5-pro",
   generationConfig: schemaConfig
 });
 

@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     };
 
     let model = genAI.getGenerativeModel({ 
-      model: "gemini-3-flash-preview", 
+      model: "gemini-2.5-pro", 
       generationConfig: schemaConfig as any
     });
 
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
            sleepMs = 6000;
            if (retries <= 2) {
              model = genAI.getGenerativeModel({
-               model: "gemini-1.5-pro",
+               model: "gemini-2.5-pro",
                generationConfig: schemaConfig as any
              });
            }

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     
     // The Google Edge trace revealed this specific API Key has advanced preview access
     const genAI = new GoogleGenerativeAI((process.env.SCRIBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY) as string);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     const promptArray = [
       {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       // Automatic Architectural Failover Payload
       if (primaryError.message?.includes("503") || primaryError.message?.includes("High demand")) {
         console.warn("[System Diagnostic]: Gemini endpoint congested (503). Instantly retrying execution fallback...");
-        const backupModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const backupModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const backupResult = await backupModel.generateContent(promptArray);
         return NextResponse.json({ text: backupResult.response.text() });
       }

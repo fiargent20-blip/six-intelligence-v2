@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     };
 
     let model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: schemaConfig as any
     });
 
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
         if (e.message?.includes("503") || e.message?.includes("High demand")) {
            console.warn("Failing over to Heavy 1.5 Pro namespace instantly...");
            model = genAI.getGenerativeModel({
-             model: "gemini-1.5-pro",
+             model: "gemini-2.5-pro",
              generationConfig: schemaConfig as any
            });
         }

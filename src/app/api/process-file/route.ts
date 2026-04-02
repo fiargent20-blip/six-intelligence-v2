@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     };
 
     let model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro", // Enforced LTS Core Intelligence Engine
+      model: "gemini-2.5-pro", // Enforced LTS Core Intelligence Engine
       generationConfig: schemaConfig as any
     });
 
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
            if (retries <= 2) {
              console.warn("Failing explicitly down into 1.5 Pro namespace architecture...");
              model = genAI.getGenerativeModel({
-               model: "gemini-1.5-pro",
+               model: "gemini-2.5-pro",
                generationConfig: schemaConfig as any
              });
            }
