@@ -458,31 +458,31 @@ export default function NewMeeting() {
       <div className="flex-1 flex items-center justify-center gap-6 pb-20">
         
         {mode === "select" && (
-          <>
+          <div className="flex flex-col md:flex-row w-full items-center justify-center gap-6 pb-20">
             <button 
               onClick={() => { setMode("record"); startRecording(); }}
-              className="flex-1 max-w-[280px] h-[320px] rounded-2xl bg-slate-950 border border-slate-800 hover:border-emerald-500 hover:bg-slate-900 transition-all group flex flex-col items-center justify-center p-8 text-center relative overflow-hidden shadow-xl"
+              className="w-full md:flex-1 w-full max-w-sm md:max-w-[280px] h-[280px] md:h-[320px] rounded-2xl bg-slate-950 border border-slate-800 hover:border-emerald-500 hover:bg-slate-900 transition-all group flex flex-col items-center justify-center p-8 text-center relative overflow-hidden shadow-xl"
             >
               <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-20 h-20 rounded-full bg-slate-900 flex items-center justify-center mb-8 border border-slate-800 group-hover:border-emerald-500/50 group-hover:scale-110 transition-transform">
-                <Mic className="w-10 h-10 text-slate-300 group-hover:text-emerald-400" />
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-slate-900 flex items-center justify-center mb-6 md:mb-8 border border-slate-800 group-hover:border-emerald-500/50 group-hover:scale-110 transition-transform">
+                <Mic className="w-8 h-8 md:w-10 md:h-10 text-slate-300 group-hover:text-emerald-400" />
               </div>
-              <h2 className="text-xl font-medium text-white mb-3 tracking-wide">Live Microphone</h2>
+              <h2 className="text-xl font-medium text-white mb-2 md:mb-3 tracking-wide">Live Microphone</h2>
               <p className="text-sm text-slate-400 leading-relaxed">Stream hyper-stable rolling 15-second blocks natively via generic JSON paths.</p>
             </button>
 
             <button 
               onClick={() => setMode("upload")}
-              className="flex-1 max-w-[280px] h-[320px] rounded-2xl bg-slate-950 border border-slate-800 hover:border-emerald-500 hover:bg-slate-900 transition-all group flex flex-col items-center justify-center p-8 text-center relative overflow-hidden shadow-xl"
+              className="w-full md:flex-1 w-full max-w-sm md:max-w-[280px] h-[280px] md:h-[320px] rounded-2xl bg-slate-950 border border-slate-800 hover:border-emerald-500 hover:bg-slate-900 transition-all group flex flex-col items-center justify-center p-8 text-center relative overflow-hidden shadow-xl"
             >
               <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-20 h-20 rounded-full bg-slate-900 flex items-center justify-center mb-8 border border-slate-800 group-hover:border-emerald-500/50 group-hover:scale-110 transition-transform">
-                <FileAudio className="w-10 h-10 text-slate-300 group-hover:text-emerald-400" />
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-slate-900 flex items-center justify-center mb-6 md:mb-8 border border-slate-800 group-hover:border-emerald-500/50 group-hover:scale-110 transition-transform">
+                <FileAudio className="w-8 h-8 md:w-10 md:h-10 text-slate-300 group-hover:text-emerald-400" />
               </div>
-              <h2 className="text-xl font-medium text-white mb-3 tracking-wide">Secure File Drop</h2>
+              <h2 className="text-xl font-medium text-white mb-2 md:mb-3 tracking-wide">Secure File Drop</h2>
               <p className="text-sm text-slate-400 leading-relaxed">Upload massive existing recordings entirely securely for Intelligence translation.</p>
             </button>
-          </>
+          </div>
         )}
 
         {mode === "record" && (
