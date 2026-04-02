@@ -13,7 +13,7 @@ const schemaConfig: any = {
 };
 
 const modelJson = genAI.getGenerativeModel({ 
-  model: "gemini-3-flash-preview",
+  model: "gemini-1.5-pro",
   generationConfig: schemaConfig
 });
 

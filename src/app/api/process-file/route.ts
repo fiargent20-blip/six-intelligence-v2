@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     };
 
     let model = genAI.getGenerativeModel({ 
-      model: "gemini-3-flash-preview", // Restored V2 designated heavy lifting endpoint
+      model: "gemini-1.5-pro", // Enforced LTS Core Intelligence Engine
       generationConfig: schemaConfig as any
     });
 

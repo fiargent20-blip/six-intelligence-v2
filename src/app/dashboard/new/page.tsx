@@ -262,8 +262,23 @@ export default function NewMeeting() {
     } catch (error: any) {
       console.error(error);
       setFrontendDebug(error.message || "Unknown error occurred");
-      alert(`Synthesis failed: ${error.message || 'Check logs'}`);
-      await db.meetings.add({ title, date: new Date().toLocaleDateString(), duration, createdAt: Date.now() });
+      
+      const mappedTranscript = logsArray.map((line, i) => ({
+         time: formatTime(i * 15),
+         speaker: "Speaker",
+         text: line.replace('[USER] ', '')
+      }));
+
+      await db.meetings.add({ 
+        title, 
+        date: new Date().toLocaleDateString(), 
+        duration, 
+        createdAt: Date.now(),
+        strategicSummary: `[System Intercept Event]: Intelligence structuring failed natively (${error.message}). Scribe securely salvaged the raw semantic audio array locally into the Vault.`,
+        transcript: mappedTranscript,
+        actions: []
+      });
+      alert(`Synthesis structural logic failed (${error.message}). Base transcripts securely salvaged to Vault!`);
       router.push("/dashboard");
     } finally {
       setIsProcessing(false);
@@ -415,8 +430,21 @@ export default function NewMeeting() {
     } catch (error: any) {
        console.error(error);
        setFrontendDebug(error.message || "Unknown error occurred");
-       alert(`Secure Offline ingestion failed: ${error.message || 'Check logs'}`);
-       setMode("select");
+       
+       const partialTranscript = cachedLogsBypass && cachedLogsBypass.length > 0 ? cachedLogsBypass : [];
+       
+       await db.meetings.add({
+         title: `${title} (Local Recovery)`,
+         date: new Date().toLocaleDateString(),
+         duration,
+         createdAt: Date.now(),
+         strategicSummary: `[System Intercept Event]: Offline pipeline timed out or crashed dynamically (${error.message}). Scribe forcibly salvaged the raw native chunk arrays straight to the secure Vault.`,
+         transcript: partialTranscript,
+         actions: []
+       });
+       
+       alert(`Secure Offline ingestion sequence disconnected (${error.message}). All captured micro-blocks logically salvaged to Vault!`);
+       router.push("/dashboard");
     } finally {
       setIsProcessing(false);
     }
