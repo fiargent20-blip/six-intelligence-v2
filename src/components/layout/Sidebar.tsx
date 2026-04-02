@@ -42,16 +42,12 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Top Navigation Blueprint */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-slate-950 border-b border-slate-900 shrink-0">
-         <div className="flex items-center gap-3">
-            {settings?.logoDataUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={settings.logoDataUrl} alt="Brand Logo" className="h-6 w-auto object-contain" />
-            )}
-            <h1 className="text-lg font-medium tracking-wide text-white">Six Intelligence</h1>
-         </div>
-         <button onClick={() => setMobileOpen(true)} className="text-slate-300 hover:text-white p-1">
+      {/* Mobile Top Navigation Blueprint (Minimalist Green Square) */}
+      <div className="md:hidden p-4 shrink-0 flex items-start justify-start">
+         <button 
+           onClick={() => setMobileOpen(true)} 
+           className="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-md transition-colors shadow-sm"
+         >
             <Menu className="w-6 h-6" />
          </button>
       </div>
