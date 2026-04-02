@@ -71,30 +71,30 @@ export default function Dashboard() {
           </div>
         ) : (
           filteredRecordings.sort((a,b) => b.createdAt - a.createdAt).map((rec) => (
-            <div key={rec.id} className="group bg-slate-950 border border-slate-800 rounded-xl p-5 flex items-center justify-between hover:border-slate-700 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center border border-slate-800">
-                  <FileAudio className="w-5 h-5 text-slate-400" />
+            <div key={rec.id} className="group bg-slate-950 border border-slate-800 rounded-xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0 hover:border-slate-700 transition-colors">
+              <div className="flex items-center gap-4 w-full md:w-auto">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 bg-slate-900 flex items-center justify-center border border-slate-800">
+                  <FileAudio className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium text-white group-hover:text-blue-400 transition-colors flex items-center gap-2">
-                    {rec.title}
-                    <button onClick={(e) => handleEdit(e, rec.id, rec.title)} className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-white transition-opacity"><Edit2 className="w-3 h-3" /></button>
+                <div className="overflow-hidden flex-1">
+                  <h3 className="text-base md:text-lg font-medium text-white group-hover:text-blue-400 transition-colors flex items-center gap-2 truncate">
+                    <span className="truncate">{rec.title}</span>
+                    <button onClick={(e) => handleEdit(e, rec.id, rec.title)} className="opacity-100 md:opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-white transition-opacity flex-shrink-0"><Edit2 className="w-3 h-3" /></button>
                   </h3>
-                  <div className="flex items-center gap-4 text-sm text-slate-500 mt-1">
+                  <div className="flex items-center gap-3 text-xs md:text-sm text-slate-500 mt-1">
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {rec.date}</span>
-                    <span>Length: {rec.duration}</span>
+                    <span>Len: {rec.duration}</span>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
-                <Link href={`/dashboard/note/${rec.id}`}>
-                  <button className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors">
+              <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto pt-2 md:pt-0 border-t border-slate-800/50 md:border-0 mt-2 md:mt-0">
+                <Link href={`/dashboard/note/${rec.id}`} className="w-full md:w-auto">
+                  <button className="w-full md:w-auto px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors shadow-sm whitespace-nowrap">
                     Access Intelligence
                   </button>
                 </Link>
-                <button onClick={(e) => handleDelete(e, rec.id)} className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                <button onClick={(e) => handleDelete(e, rec.id)} className="p-2 flex-shrink-0 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>

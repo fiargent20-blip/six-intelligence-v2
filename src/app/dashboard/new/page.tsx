@@ -144,9 +144,9 @@ export default function NewMeeting() {
             let completedCount = 0;
             let globalIndex = 0;
             
-            // CRITICAL FIX: iOS Safari physically crashes (TypeError: Load failed) if you exceed 4-6 concurrent heavy network sockets.
-            // Capping explicitly to 4 parallel safely.
-            const PARALLEL_LIMIT = 4; 
+            // CRITICAL FIX: iOS Safari network threads instantly starve if you exceed concurrent limits.
+            // Capping safely to 2 parallel to ensure steady, reliable synthesis on mobile without locking Safari UI.
+            const PARALLEL_LIMIT = 2; 
             
             const workers = Array(PARALLEL_LIMIT).fill(0).map(async () => {
               while (globalIndex < blocks.length) {
@@ -538,7 +538,7 @@ export default function NewMeeting() {
                   </div>
                   
                   <div className="flex-1 overflow-y-auto pr-4 text-slate-300 leading-relaxed font-light text-lg flex flex-col gap-2">
-                    {logs.map((L, i) => <div key={i}>{L}</div>)}
+                    {logs.slice(-30).map((L, i) => <div key={i}>{L}</div>)}
                     {logs.length === 0 && (
                       <p className="text-slate-600 italic flex items-center h-full justify-center">Rolling synthesis loops pending block generation...</p>
                     )}
@@ -567,7 +567,7 @@ export default function NewMeeting() {
             <input 
               ref={fileInputRef}
               type="file" 
-              accept="audio/*" 
+              accept="audio/*,video/*,.m4a,.mp3,.wav,.webm,.mp4" 
               onChange={handleFileUpload} 
               className="hidden" 
               disabled={isProcessing}
