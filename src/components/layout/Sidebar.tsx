@@ -46,7 +46,7 @@ export default function Sidebar() {
       <div className="md:hidden p-4 shrink-0 flex items-start justify-start">
          <button 
            onClick={() => setMobileOpen(true)} 
-           className="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-md transition-colors shadow-sm"
+           className="bg-[#31572C] hover:bg-[#31572C]/80 text-white p-2 rounded-md transition-colors shadow-sm"
          >
             <Menu className="w-6 h-6" />
          </button>
