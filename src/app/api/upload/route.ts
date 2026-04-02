@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
-export const maxDuration = 3600; // Unlock Next.js architectural timeout constraints natively
+export const maxDuration = 60; // Unlock Next.js architectural timeout constraints natively
 
 // Dedicated structural endpoint exclusively for dropping massive offline media binaries.
 export async function POST(req: NextRequest) {

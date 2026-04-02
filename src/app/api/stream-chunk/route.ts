@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export const maxDuration = 3600; // Next.js extended timeouts
+export const maxDuration = 60; // Next.js extended timeouts
 
 export async function POST(req: NextRequest) {
   try {

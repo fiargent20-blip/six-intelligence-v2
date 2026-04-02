@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
-export const maxDuration = 3600; // Unlock Next.js architectural timeout constraints natively
+export const maxDuration = 60; // Unlock Next.js architectural timeout constraints natively
 
 // Dedicated structural endpoint exclusively for generating intelligence from a text-only payload
 export async function POST(req: NextRequest) {

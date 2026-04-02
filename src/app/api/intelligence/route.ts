@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // CRITICAL BYPASS: Allows Next.js to keep the API connection open for up to 60 minutes.
-export const maxDuration = 3600;
+export const maxDuration = 60;
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
 const apiKey = process.env.SCRIBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || "";
