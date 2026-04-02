@@ -19,7 +19,7 @@ export default function SecureScribeEntry() {
     setErrorStatus("");
     
     // Explicitly authenticate against the hardcoded V1 parity proxy credentials
-    if (accessId.trim() === "six@sixintelligance.co.uk" && securityToken === "Six2026!") {
+    if (accessId.trim() === "six@sixintelligence.co.uk" && securityToken === "Six2026!") {
       // Set an isolated local session cookie specifically tailored for V2 Scribe without polluting V1 native domains
       document.cookie = "scribe_auth_v2_active=six_clearance_granted; path=/; max-age=86400; SameSite=Strict";
       
@@ -55,7 +55,7 @@ export default function SecureScribeEntry() {
             <input 
               type="text" 
               className="w-full bg-black border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-slate-600 transition-colors"
-              placeholder="six@sixintelligance.co.uk"
+              placeholder="six@sixintelligence.co.uk"
               value={accessId}
               onChange={(e) => setAccessId(e.target.value)}
               required
