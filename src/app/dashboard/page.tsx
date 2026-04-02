@@ -36,17 +36,19 @@ export default function Dashboard() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto hide-print">
-      <header className="flex items-center justify-between mb-10">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div>
           <h1 className="text-3xl font-medium text-white mb-2">Scribe Dashboard</h1>
           <p className="text-slate-400">Manage and analyze your secure offline intelligence.</p>
         </div>
         
-        <Link href="/dashboard/new">
-          <button className="bg-white text-black font-medium px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-slate-200 transition-colors shadow-lg">
-            <span className="text-xl leading-none">+</span> New Meeting
-          </button>
-        </Link>
+        <div className="self-start md:self-auto">
+          <Link href="/dashboard/new">
+            <button className="bg-white text-black font-medium px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-slate-200 transition-colors shadow-lg">
+              <span className="text-xl leading-none">+</span> New Meeting
+            </button>
+          </Link>
+        </div>
       </header>
 
       <div className="mb-8 relative">
