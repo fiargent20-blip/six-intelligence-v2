@@ -15,5 +15,7 @@ Scribe is a high-performance Next.js asynchronous intelligence extraction platfo
 ## 3. Resilience and Failover Matrix
 - **Automatic Exponential Re-Routing:** If Gemini `3.0-Flash-Preview` becomes highly congested (returning standard HTML `503` or `429` rate limit errors), standard Scribe backend routes (`/api/stream-chunk` & `/api/process-file`) will sequentially pause recursively and mathematically re-trigger execution pathways securely routing to `gemini-1.5-pro-latest` or `gemini-2.5-flash` natively to guarantee payload extraction succeeds silently without crashing the visual flow layer.
 
-## 4. Authorization Blueprint
+## 4. Authorization Blueprint & Edge Security
+- **Edge Middleware Gateway:** Scribe V2 is fully sealed behind a `middleware.ts` interceptor natively operating on Vercel's Edge network. Any browser request attempting to explicitly hit `/dashboard` without carrying the verified exact user cookie is actively repelled natively to the lock screen.
+- **Client Handshake:** The entry pathway requires explicit email/password credential matching (`six@sixintelligence.co.uk`) which mathematically unlocks a secure browser cookie without querying legacy V1 databases.
 - Secrets routing is maintained through strict `.env.local` mappings completely shielded natively within backend isolated Node environments without any `.gitignore` leakage vectors.

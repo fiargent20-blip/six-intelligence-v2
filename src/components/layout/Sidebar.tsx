@@ -8,9 +8,11 @@ import {
   Settings, 
   Activity, 
   LogOut,
-  ChevronDown
+  ChevronDown,
+  Menu,
+  X
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import clsx from "clsx";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
@@ -21,6 +23,12 @@ export default function Sidebar() {
   const router = useRouter();
   const [intelOpen, setIntelOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  
+  // Natively close the mobile architecture when routes dynamically transition
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
   
   const settings = useLiveQuery(() => db.settings.get(1));
   
@@ -33,14 +41,47 @@ export default function Sidebar() {
   const [isExporting, setIsExporting] = useState(false);
 
   return (
-    <aside className="w-64 bg-slate-950 border-r border-slate-900 h-screen flex flex-col print:hidden shrink-0">
-      <div className="p-6">
-        {settings?.logoDataUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={settings.logoDataUrl} alt="Brand Logo" className="h-8 w-auto mb-4 object-contain" />
-        )}
-        <h1 className="text-xl font-medium tracking-wide text-white">Six Intelligence<br/><span className="text-sm text-slate-400">Scribe</span></h1>
+    <>
+      {/* Mobile Top Navigation Blueprint */}
+      <div className="md:hidden flex items-center justify-between p-4 bg-slate-950 border-b border-slate-900 shrink-0">
+         <div className="flex items-center gap-3">
+            {settings?.logoDataUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={settings.logoDataUrl} alt="Brand Logo" className="h-6 w-auto object-contain" />
+            )}
+            <h1 className="text-lg font-medium tracking-wide text-white">Six Intelligence</h1>
+         </div>
+         <button onClick={() => setMobileOpen(true)} className="text-slate-300 hover:text-white p-1">
+            <Menu className="w-6 h-6" />
+         </button>
       </div>
+
+      {/* Mobile Backdrop Overlay Shadow */}
+      {mobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" 
+          onClick={() => setMobileOpen(false)} 
+        />
+      )}
+
+      {/* Primary Dimensional Sidebar */}
+      <aside className={clsx(
+        "fixed md:static inset-y-0 left-0 z-50 w-64 bg-slate-950 border-r border-slate-900 h-screen flex flex-col print:hidden shrink-0 transition-transform duration-300 ease-in-out",
+        mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      )}>
+        <div className="p-6 flex items-center justify-between">
+          <div>
+            {settings?.logoDataUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={settings.logoDataUrl} alt="Brand Logo" className="h-8 w-auto mb-4 object-contain" />
+            )}
+            <h1 className="text-xl font-medium tracking-wide text-white">Six Intelligence<br/><span className="text-sm text-slate-400">Scribe</span></h1>
+          </div>
+          {/* Mobile Explicit Closure */}
+          <button onClick={() => setMobileOpen(false)} className="md:hidden text-slate-500 hover:text-white p-1 absolute top-6 right-4">
+             <X className="w-6 h-6" />
+          </button>
+        </div>
 
       <nav className="flex-1 overflow-y-auto p-4 space-y-1">
         <Link 
@@ -158,5 +199,6 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+  </>
   );
 }
