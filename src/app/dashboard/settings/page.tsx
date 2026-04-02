@@ -166,11 +166,11 @@ export default function ScribeSettings() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-slate-800 flex justify-end gap-4 items-center">
-          {saved && <span className="text-emerald-400 text-sm flex items-center gap-2"><CheckCircle2 className="w-4 h-4"/> Saved to Scribe Ecosystem</span>}
+        <div className="mt-10 pt-6 border-t border-slate-800 flex flex-col-reverse sm:flex-row justify-end gap-4 items-stretch sm:items-center">
+          {saved && <span className="text-emerald-400 text-sm flex items-center justify-center gap-2"><CheckCircle2 className="w-4 h-4"/> Saved to Scribe Ecosystem</span>}
           <button 
             onClick={saveSettings}
-            className="bg-white text-black font-medium px-6 py-2.5 rounded-lg hover:bg-slate-200 transition-colors"
+            className="w-full sm:w-auto bg-white text-black font-medium px-6 py-3 sm:py-2.5 rounded-lg hover:bg-slate-200 transition-colors shadow-sm"
           >
             Save Scribe Configuration
           </button>
