@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
            if (retries <= 2) {
              console.warn("Failing explicitly down into 1.5 Pro namespace architecture...");
              model = genAI.getGenerativeModel({
-               model: "gemini-1.5-pro-latest",
+               model: "gemini-1.5-pro",
                generationConfig: schemaConfig as any
              });
            }

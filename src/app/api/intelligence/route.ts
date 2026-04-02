@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         if (e.message?.includes("503") || e.message?.includes("High demand")) {
            console.warn("Instantly failing over Intelligence formulation to 1.5 Pro architecture...");
            activeModel = genAI.getGenerativeModel({
-             model: "gemini-1.5-pro-latest",
+             model: "gemini-1.5-pro",
              generationConfig: schemaConfig
            });
         }

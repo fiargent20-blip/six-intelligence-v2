@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
            sleepMs = 6000;
            if (retries <= 2) {
              model = genAI.getGenerativeModel({
-               model: "gemini-1.5-pro-latest",
+               model: "gemini-1.5-pro",
                generationConfig: schemaConfig as any
              });
            }
