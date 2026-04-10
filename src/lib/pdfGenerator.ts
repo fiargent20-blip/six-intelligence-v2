@@ -14,8 +14,9 @@ export async function generateDirectPDF(elementId: string, filename: string, tra
   // Create an off-screen container that mimics an A4 printed page
   const container = document.createElement('div');
   container.style.position = 'absolute';
-  container.style.left = '-9999px';
-  container.style.top = '0';
+  container.style.left = '0px';
+  container.style.top = '0px';
+  container.style.zIndex = '-9999';
   container.style.width = '210mm'; // A4 width
   container.style.backgroundColor = 'white';
   container.style.color = 'black';
@@ -63,7 +64,13 @@ export async function generateDirectPDF(elementId: string, filename: string, tra
     const canvas = await html2canvas(container, {
       scale: 2,
       useCORS: true,
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
+      windowWidth: container.scrollWidth,
+      windowHeight: container.scrollHeight,
+      x: 0,
+      y: 0,
+      scrollX: 0,
+      scrollY: 0
     });
 
     const imgData = canvas.toDataURL('image/png');
