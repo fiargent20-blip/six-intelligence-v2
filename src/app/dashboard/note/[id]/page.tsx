@@ -100,7 +100,11 @@ export default function NoteDetail() {
     
     setIsSynthesizing(true);
     try {
-      const fullTranscriptText = note.transcript.map(l => l.text || l).join("\n");
+      const fullTranscriptText = note.transcript.map((l: any) => {
+        if (typeof l === 'string') return l;
+        return `[${l.time || '0:00'}] ${l.speaker || 'Speaker'}: ${l.text || ''}`;
+      }).join("\n");
+      
       const res = await fetch('/api/process-text', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
