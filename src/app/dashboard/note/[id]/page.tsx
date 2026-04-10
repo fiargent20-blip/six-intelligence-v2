@@ -22,6 +22,7 @@ export default function NoteDetail() {
 
   // Edit State
   const [isEditing, setIsEditing] = useState(false);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [editedSummary, setEditedSummary] = useState("");
   const [editedObjectives, setEditedObjectives] = useState<string[]>([]);
   const [editedActions, setEditedActions] = useState<any[]>([]);
@@ -92,6 +93,46 @@ export default function NoteDetail() {
     });
 
     setIsEditing(false);
+  };
+
+  const handleReSynthesize = async () => {
+    if (!note || !note.transcript) return;
+    
+    setIsSynthesizing(true);
+    try {
+      const fullTranscriptText = note.transcript.map(l => l.text || l).join("\n");
+      const res = await fetch('/api/process-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          fullTranscriptText, 
+          language: settings?.language || "GB" 
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || "Retry pipeline crashed.");
+      }
+      
+      // Clean up the title if it contains the recovery string
+      const newTitle = note.title.replace(" (Local Recovery)", "");
+      
+      await db.meetings.update(id, { 
+        title: newTitle,
+        strategicSummary: data.strategicSummary || data.summary,
+        coreObjectives: data.coreObjectives || [],
+        actions: data.actions || [],
+        backgroundContext: data.backgroundContext || []
+      });
+      
+      alert("Native Structural Synthesis completely restored!");
+    } catch (err: any) {
+      alert("Retry Failed: " + err.message);
+    } finally {
+      setIsSynthesizing(false);
+    }
   };
 
   if (!note) {
@@ -186,7 +227,18 @@ export default function NoteDetail() {
       <div className="flex-1 space-y-12 pb-8">
         {/* 1. STRATEGIC SUMMARY */}
         <section className={clsx("print:block print-exclude-transcript", activeTab === "summary" ? "block" : "hidden print:block")}>
-          <h2 className="text-xl font-medium text-white print:text-black print:font-bold mb-4 print:border-b print:border-slate-300 print:pb-2">1. Strategic Summary</h2>
+          <div className="flex items-center justify-between mb-4 print:mb-2 print:border-b print:border-slate-300 print:pb-2">
+             <h2 className="text-xl font-medium text-white print:text-black print:font-bold">1. Strategic Summary</h2>
+             {(note.strategicSummary?.includes("[System Intercept Event]") || note.title?.includes("(Local Recovery)")) && (
+                <button 
+                  onClick={handleReSynthesize} 
+                  disabled={isSynthesizing}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg flex items-center gap-2 shadow-sm disabled:opacity-50 transition-colors print:hidden"
+                >
+                  <Bot className="w-4 h-4" /> {isSynthesizing ? "Rebuilding Structure..." : "Retry AI Synthesis"}
+                </button>
+             )}
+          </div>
           <div className="bg-slate-950 border border-slate-800 print:bg-white print:border-none rounded-xl p-6 print:p-0 text-slate-300 print:text-black leading-relaxed whitespace-pre-wrap">
             {isEditing ? (
               <textarea 
