@@ -191,20 +191,31 @@ export default function NoteDetail() {
         </div>
         
         {/* Subtle Edit Toggles Header Action */}
-        <div className="print:hidden pt-2">
+        <div className="print:hidden pt-2 flex flex-col items-end gap-3">
           {!isEditing ? (
-            <button onClick={handleEnableEdit} className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 rounded-lg text-sm transition-colors shadow-sm font-medium">
+            <button onClick={handleEnableEdit} className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 rounded-lg text-sm transition-colors shadow-sm font-medium w-48">
               <Edit3 className="w-4 h-4" /> Edit Analysis
             </button>
           ) : (
-            <div className="flex items-center gap-3">
-              <button onClick={() => setIsEditing(false)} className="flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-600 hover:bg-red-500/20 text-slate-300 hover:text-red-400 rounded-lg text-sm transition-colors shadow-sm">
+            <div className="flex items-center justify-end gap-3 w-48">
+              <button onClick={() => setIsEditing(false)} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-800 border border-slate-600 hover:bg-red-500/20 text-slate-300 hover:text-red-400 rounded-lg text-sm transition-colors shadow-sm">
                 <X className="w-4 h-4" /> Cancel
               </button>
-              <button onClick={handleSaveEdits} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm shadow-lg shadow-blue-500/20 transition-all font-medium">
-                <Save className="w-4 h-4" /> Save Details
+              <button onClick={handleSaveEdits} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm shadow-lg shadow-blue-500/20 transition-all font-medium">
+                <Save className="w-4 h-4" /> Save
               </button>
             </div>
+          )}
+          
+          {/* Retry Array Structural Component */}
+          {(note.strategicSummary?.includes("[System Intercept Event]") || note.title?.includes("(Local Recovery)")) && (
+            <button 
+              onClick={handleReSynthesize} 
+              disabled={isSynthesizing}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 border border-emerald-500 hover:bg-emerald-500 text-white hover:text-white rounded-lg text-sm transition-colors shadow-sm font-medium w-48 disabled:opacity-50"
+            >
+              <Bot className="w-4 h-4" /> {isSynthesizing ? "Rebuilding..." : "Retry AI Synthesis"}
+            </button>
           )}
         </div>
       </header>
@@ -233,15 +244,6 @@ export default function NoteDetail() {
         <section className={clsx("print:block print-exclude-transcript", activeTab === "summary" ? "block" : "hidden print:block")}>
           <div className="flex items-center justify-between mb-4 print:mb-2 print:border-b print:border-slate-300 print:pb-2">
              <h2 className="text-xl font-medium text-white print:text-black print:font-bold">1. Strategic Summary</h2>
-             {(note.strategicSummary?.includes("[System Intercept Event]") || note.title?.includes("(Local Recovery)")) && (
-                <button 
-                  onClick={handleReSynthesize} 
-                  disabled={isSynthesizing}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg flex items-center gap-2 shadow-sm disabled:opacity-50 transition-colors print:hidden"
-                >
-                  <Bot className="w-4 h-4" /> {isSynthesizing ? "Rebuilding Structure..." : "Retry AI Synthesis"}
-                </button>
-             )}
           </div>
           <div className="bg-slate-950 border border-slate-800 print:bg-white print:border-none rounded-xl p-6 print:p-0 text-slate-300 print:text-black leading-relaxed whitespace-pre-wrap">
             {isEditing ? (
