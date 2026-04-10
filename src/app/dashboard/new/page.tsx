@@ -304,12 +304,14 @@ export default function NewMeeting() {
         transcript: mappedTranscript,
         actions: []
       }).then(() => {
-         // Guarantee flush before alerting
-         alert(`Synthesis structural logic timed out (${error.message}). Massive 60-Minute offline array successfully salvaged securely to local Vault!`);
-         window.location.href = "/dashboard"; // Use hard browser relocation to guarantee unmount wipe
+         // Guarantee Dexie's transaction.oncomplete fires natively by yielding event loop
+         setTimeout(() => {
+           alert(`Synthesis structural logic timed out (${error.message}). Massive 60-Minute offline array successfully salvaged securely to local Vault!`);
+           window.location.href = "/dashboard"; // Use hard browser relocation to guarantee unmount wipe
+         }, 1000);
       }).catch(err => {
          console.error("Critical Vault failure:", err);
-         alert("CRITICAL ERROR: Safari denied Vault Storage. " + err.message);
+         alert("CRITICAL ERROR: Chrome/Safari denied Vault Storage. " + err.message);
       });
     } finally {
       setIsProcessing(false);
@@ -478,11 +480,14 @@ export default function NewMeeting() {
          transcript: partialTranscript,
          actions: []
        }).then(() => {
-         alert(`Node disconnected securely (${error.message}). Massive offline structural payload safely guaranteed to Vault! Check dashboard immediately.`);
-         window.location.href = "/dashboard";
+         // Force event loop to organically breathe so Chrome IDB requests structurally resolve physical oncomplete commits
+         setTimeout(() => {
+           alert(`Node disconnected securely (${error.message}). Massive offline structural payload safely guaranteed to Vault! Check dashboard immediately.`);
+           window.location.href = "/dashboard";
+         }, 1000);
        }).catch(err => {
          console.error("Critical Vault failure:", err);
-         alert("CRITICAL ERROR: iOS Safari absolutely denied Vault Storage. Storage may be 100% full. " + err.message);
+         alert("CRITICAL ERROR: Browser absolutely denied Vault Storage. Storage may be 100% full. " + err.message);
        });
     } finally {
       setIsProcessing(false);
