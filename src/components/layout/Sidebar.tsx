@@ -55,7 +55,7 @@ export default function Sidebar() {
       {/* Mobile Backdrop Overlay Shadow */}
       {mobileOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm print:hidden" 
           onClick={() => setMobileOpen(false)} 
         />
       )}
@@ -111,7 +111,8 @@ export default function Sidebar() {
               <button 
                 className="mt-2 block w-full text-left text-sm text-slate-400 hover:text-white transition-colors pt-1 pb-2"
                 onClick={() => {
-                  window.print();
+                  setMobileOpen(false);
+                  setTimeout(() => window.print(), 200);
                 }}
               >
                 Export Scribe PDF
@@ -119,9 +120,12 @@ export default function Sidebar() {
               <button 
                 className="block w-full text-left text-sm text-slate-400 hover:text-white transition-colors pb-3 mb-2"
                 onClick={() => {
-                  document.body.classList.add('print-transcript-only');
-                  window.print();
-                  setTimeout(() => document.body.classList.remove('print-transcript-only'), 500);
+                  setMobileOpen(false);
+                  setTimeout(() => {
+                    document.body.classList.add('print-transcript-only');
+                    window.print();
+                    setTimeout(() => document.body.classList.remove('print-transcript-only'), 500);
+                  }, 200);
                 }}
               >
                 Download Smart Transcript PDF

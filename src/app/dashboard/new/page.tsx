@@ -57,6 +57,28 @@ export default function NewMeeting() {
   const [recordingTime, setRecordingTime] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   
+  // NATIVE WAKELOCK FOR IOS SLEEP PREVENTION
+  const wakeLockRef = useRef<any>(null);
+
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+        console.log('Mobile Hardware Wake Lock activated securely.');
+      }
+    } catch (err: any) {
+      console.warn(`Wake Lock restricted by hardware: ${err.message}`);
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    if (wakeLockRef.current) {
+      await wakeLockRef.current.release().catch(console.error);
+      wakeLockRef.current = null;
+      console.log('Wake Lock safely released.');
+    }
+  };
+  
   // Infinite Architecture State
   const [logs, setLogs] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -78,6 +100,9 @@ export default function NewMeeting() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error("navigator.mediaDevices is totally undefined. Access via HTTP is severely restricted on MacOS architecture!");
       }
+
+      // Execute hardware wake lock
+      await requestWakeLock();
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
@@ -289,6 +314,10 @@ export default function NewMeeting() {
     if (isRecording) {
       isRecordingRef.current = false;
       setIsRecording(false);
+      
+      // Release hardware wake lock to massively save battery natively
+      releaseWakeLock();
+      
       setFrontendDebug("Stream completely stopped. Compiling massive offline hardware arrays natively...");
       
       const finalizeCapture = async () => {
