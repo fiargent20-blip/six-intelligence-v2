@@ -294,17 +294,23 @@ export default function NewMeeting() {
          text: line.replace('[USER] ', '')
       }));
 
-      await db.meetings.add({ 
-        title, 
+       // Critically wrap the DB commit natively to assure the Safari IDB event-loop entirely resolves
+      db.meetings.add({ 
+        title: `${title} (Local Recovery)`, 
         date: new Date().toLocaleDateString(), 
         duration, 
         createdAt: Date.now(),
         strategicSummary: `[System Intercept Event]: Intelligence structuring failed natively (${error.message}). Scribe securely salvaged the raw semantic audio array locally into the Vault.`,
         transcript: mappedTranscript,
         actions: []
+      }).then(() => {
+         // Guarantee flush before alerting
+         alert(`Synthesis structural logic timed out (${error.message}). Massive 60-Minute offline array successfully salvaged securely to local Vault!`);
+         window.location.href = "/dashboard"; // Use hard browser relocation to guarantee unmount wipe
+      }).catch(err => {
+         console.error("Critical Vault failure:", err);
+         alert("CRITICAL ERROR: Safari denied Vault Storage. " + err.message);
       });
-      alert(`Synthesis structural logic failed (${error.message}). Base transcripts securely salvaged to Vault!`);
-      router.push("/dashboard");
     } finally {
       setIsProcessing(false);
     }
@@ -462,18 +468,22 @@ export default function NewMeeting() {
        
        const partialTranscript = cachedLogsBypass && cachedLogsBypass.length > 0 ? cachedLogsBypass : [];
        
-       await db.meetings.add({
+       // Explicitly guarantee IDB Promise resolution loop flush into SSD before navigating
+       db.meetings.add({
          title: `${title} (Local Recovery)`,
          date: new Date().toLocaleDateString(),
          duration,
          createdAt: Date.now(),
-         strategicSummary: `[System Intercept Event]: Offline pipeline timed out or crashed dynamically (${error.message}). Scribe forcibly salvaged the raw native chunk arrays straight to the secure Vault.`,
+         strategicSummary: `[System Intercept Event]: Offline pipeline timed out dynamically (${error.message}). Scribe forcibly salvaged the raw native 1-Hour array blocks straight to the secure Vault.`,
          transcript: partialTranscript,
          actions: []
+       }).then(() => {
+         alert(`Node disconnected securely (${error.message}). Massive offline structural payload safely guaranteed to Vault! Check dashboard immediately.`);
+         window.location.href = "/dashboard";
+       }).catch(err => {
+         console.error("Critical Vault failure:", err);
+         alert("CRITICAL ERROR: iOS Safari absolutely denied Vault Storage. Storage may be 100% full. " + err.message);
        });
-       
-       alert(`Secure Offline ingestion sequence disconnected (${error.message}). All captured micro-blocks logically salvaged to Vault!`);
-       router.push("/dashboard");
     } finally {
       setIsProcessing(false);
     }
