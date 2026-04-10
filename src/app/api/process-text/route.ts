@@ -90,12 +90,12 @@ export async function POST(req: NextRequest) {
         if (retries === 0) throw e;
         console.warn(`[Diagnostics] Process Text API native crash: ${e.message}. Retries remaining: ${retries}`);
         
-        let sleepMs = 3000;
+        let sleepMs = 2000;
         if (e.message?.includes("503") || e.message?.includes("High demand") || e.message?.includes("quota") || e.message?.includes("429")) {
-           sleepMs = 6000;
+           sleepMs = 2000;
            if (retries <= 2) {
              model = genAI.getGenerativeModel({
-               model: "gemini-2.5-pro",
+               model: "gemini-2.5-flash",
                generationConfig: schemaConfig as any
              });
            }

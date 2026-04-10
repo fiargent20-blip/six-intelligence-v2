@@ -75,9 +75,9 @@ export async function POST(req: NextRequest) {
         
         console.warn(`[System Diagnostic]: Gemini API connection dropped or congested (503). Retries remaining: ${retries2}`);
         if (e.message?.includes("503") || e.message?.includes("High demand")) {
-           console.warn("Instantly failing over Intelligence formulation to 1.5 Pro architecture...");
+           console.warn("Instantly failing over Intelligence formulation to 2.5 Flash architecture to bypass Pro node congestion...");
            activeModel = genAI.getGenerativeModel({
-             model: "gemini-1.5-pro",
+             model: "gemini-2.5-flash",
              generationConfig: schemaConfig
            });
         }

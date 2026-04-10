@@ -100,15 +100,15 @@ export async function POST(req: NextRequest) {
         console.warn(`[Diagnostics] Process File API native crash: ${e.message}. Retries remaining: ${retries}`);
         
         // Wait exponentially on 503 Server Congestion or Quota errors
-        let sleepMs = 3000;
+        let sleepMs = 2000;
         if (e.message?.includes("503") || e.message?.includes("High demand") || e.message?.includes("quota") || e.message?.includes("429")) {
            console.warn(`Encountered severe backend congestion/limits (${e.message}). Falling back exponentially...`);
-           sleepMs = 6000;
+           sleepMs = 2000;
            
            if (retries <= 2) {
-             console.warn("Failing explicitly down into 1.5 Pro namespace architecture...");
+             console.warn("Failing strictly down into 2.5 Flash namespace architecture to bypass Pro node congestion...");
              model = genAI.getGenerativeModel({
-               model: "gemini-2.5-pro",
+               model: "gemini-2.5-flash",
                generationConfig: schemaConfig as any
              });
            }
