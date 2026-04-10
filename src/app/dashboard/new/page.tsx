@@ -300,18 +300,18 @@ export default function NewMeeting() {
         date: new Date().toLocaleDateString(), 
         duration, 
         createdAt: Date.now(),
-        strategicSummary: `[System Intercept Event]: Intelligence structuring failed natively (${error.message}). Scribe securely salvaged the raw semantic audio array locally into the Vault.`,
+        strategicSummary: `[System Intercept Event]: Intelligence structuring failed natively (${error.message}). Scribe securely salvaged the raw semantic audio array locally into Secure Local Storage.`,
         transcript: mappedTranscript,
         actions: []
       }).then(() => {
          // Guarantee Dexie's transaction.oncomplete fires natively by yielding event loop
          setTimeout(() => {
-           alert(`Synthesis structural logic timed out (${error.message}). Massive 60-Minute offline array successfully salvaged securely to local Vault!`);
+           alert(`Synthesis structural logic timed out (${error.message}). Massive 60-Minute offline array successfully salvaged securely to Secure Local Storage!`);
            window.location.href = "/dashboard"; // Use hard browser relocation to guarantee unmount wipe
          }, 1000);
       }).catch(err => {
-         console.error("Critical Vault failure:", err);
-         alert("CRITICAL ERROR: Chrome/Safari denied Vault Storage. " + err.message);
+         console.error("Critical local storage failure:", err);
+         alert("CRITICAL ERROR: Chrome/Safari denied Secure Local Storage. " + err.message);
       });
     } finally {
       setIsProcessing(false);
@@ -476,18 +476,18 @@ export default function NewMeeting() {
          date: new Date().toLocaleDateString(),
          duration,
          createdAt: Date.now(),
-         strategicSummary: `[System Intercept Event]: Offline pipeline timed out dynamically (${error.message}). Scribe forcibly salvaged the raw native 1-Hour array blocks straight to the secure Vault.`,
+         strategicSummary: `[System Intercept Event]: Offline pipeline timed out dynamically (${error.message}). Scribe forcibly salvaged the raw native 1-Hour array blocks straight to Secure Local Storage.`,
          transcript: partialTranscript,
          actions: []
        }).then(() => {
          // Force event loop to organically breathe so Chrome IDB requests structurally resolve physical oncomplete commits
          setTimeout(() => {
-           alert(`Node disconnected securely (${error.message}). Massive offline structural payload safely guaranteed to Vault! Check dashboard immediately.`);
+           alert(`Node disconnected securely (${error.message}). Massive offline structural payload safely guaranteed to Secure Local Storage! Check dashboard immediately.`);
            window.location.href = "/dashboard";
          }, 1000);
        }).catch(err => {
-         console.error("Critical Vault failure:", err);
-         alert("CRITICAL ERROR: Browser absolutely denied Vault Storage. Storage may be 100% full. " + err.message);
+         console.error("Critical local storage failure:", err);
+         alert("CRITICAL ERROR: Browser absolutely denied Secure Local Storage. Storage may be 100% full. " + err.message);
        });
     } finally {
       setIsProcessing(false);

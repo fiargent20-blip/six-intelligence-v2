@@ -212,7 +212,7 @@ export default function NoteDetail() {
             <button 
               onClick={handleReSynthesize} 
               disabled={isSynthesizing}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 border border-emerald-500 hover:bg-emerald-500 text-white hover:text-white rounded-lg text-sm transition-colors shadow-sm font-medium w-48 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-[#31572C] hover:bg-[#203b1e] text-white hover:text-white rounded-lg text-sm transition-colors shadow-sm font-medium w-48 disabled:opacity-50"
             >
               <Bot className="w-4 h-4" /> {isSynthesizing ? "Rebuilding..." : "Retry AI Synthesis"}
             </button>
