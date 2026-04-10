@@ -34,10 +34,16 @@ export async function generateDirectPDF(elementId: string, filename: string, tra
     (el as HTMLElement).style.display = 'none';
   });
 
-  // Force text elements to black
-  const texts = clone.querySelectorAll('h1, h2, h3, p, span, div, li, td, th');
+  // Force text elements to black and completely strip native iOS shadows
+  const texts = clone.querySelectorAll('*');
   texts.forEach(el => {
-    (el as HTMLElement).style.color = 'black';
+    const e = el as HTMLElement;
+    if (e.tagName.match(/H1|H2|H3|P|SPAN|DIV|LI|TD|TH/i)) {
+      e.style.color = 'black';
+    }
+    e.style.boxShadow = 'none';
+    e.style.textShadow = 'none';
+    e.style.webkitBoxShadow = 'none';
   });
 
   if (transcriptOnly) {
