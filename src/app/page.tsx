@@ -62,7 +62,7 @@ export default function SecureScribeEntry() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Security Token</label>
+            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Password</label>
             <input 
               type="password" 
               className="w-full bg-black border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-slate-600 transition-colors"
