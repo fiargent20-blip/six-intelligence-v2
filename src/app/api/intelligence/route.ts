@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     `;
 
     let result2;
-    let retries2 = 2;
+    let retries2 = 3;
     let activeModel = modelJson;
 
     while (retries2 >= 0) {
@@ -74,12 +74,14 @@ export async function POST(req: NextRequest) {
         if (retries2 === 0) throw e;
         
         console.warn(`[System Diagnostic]: Gemini API connection dropped or congested (503). Retries remaining: ${retries2}`);
-        if (e.message?.includes("503") || e.message?.includes("High demand")) {
-           console.warn("Instantly failing over Intelligence formulation to 2.5 Flash architecture to bypass Pro node congestion...");
-           activeModel = genAI.getGenerativeModel({
-             model: "gemini-2.5-flash",
-             generationConfig: schemaConfig
-           });
+        if (e.message?.includes("503") || e.message?.includes("High demand") || e.message?.includes("quota") || e.message?.includes("429")) {
+           if (retries2 === 3) {
+             activeModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: schemaConfig });
+           } else if (retries2 === 2) {
+             activeModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: schemaConfig });
+           } else if (retries2 === 1) {
+             activeModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: schemaConfig });
+           }
         }
         
         retries2--;

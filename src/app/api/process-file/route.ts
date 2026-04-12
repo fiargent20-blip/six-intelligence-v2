@@ -102,15 +102,17 @@ export async function POST(req: NextRequest) {
         // Wait exponentially on 503 Server Congestion or Quota errors
         let sleepMs = 2000;
         if (e.message?.includes("503") || e.message?.includes("High demand") || e.message?.includes("quota") || e.message?.includes("429")) {
-           console.warn(`Encountered severe backend congestion/limits (${e.message}). Falling back exponentially...`);
-           sleepMs = 2000;
+           console.warn(`Encountered severe backend congestion/limits (${e.message}). Executing multi-cluster cascade failovers...`);
            
-           if (retries <= 2) {
-             console.warn("Failing strictly down into 2.5 Flash namespace architecture to bypass Pro node congestion...");
-             model = genAI.getGenerativeModel({
-               model: "gemini-2.5-flash",
-               generationConfig: schemaConfig as any
-             });
+           if (retries === 3) {
+             console.warn("Cascading to 2.5-flash cluster...");
+             model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: schemaConfig as any });
+           } else if (retries === 2) {
+             console.warn("Cascading to isolated 1.5-pro cluster...");
+             model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: schemaConfig as any });
+           } else if (retries === 1) {
+             console.warn("Cascading to isolated 1.5-flash cluster...");
+             model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: schemaConfig as any });
            }
         }
         

@@ -92,12 +92,12 @@ export async function POST(req: NextRequest) {
         
         let sleepMs = 2000;
         if (e.message?.includes("503") || e.message?.includes("High demand") || e.message?.includes("quota") || e.message?.includes("429")) {
-           sleepMs = 2000;
-           if (retries <= 2) {
-             model = genAI.getGenerativeModel({
-               model: "gemini-2.5-flash",
-               generationConfig: schemaConfig as any
-             });
+           if (retries === 3) {
+             model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: schemaConfig as any });
+           } else if (retries === 2) {
+             model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: schemaConfig as any });
+           } else if (retries === 1) {
+             model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: schemaConfig as any });
            }
         }
         
