@@ -78,9 +78,9 @@ export async function POST(req: NextRequest) {
            if (retries2 === 3) {
              activeModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: schemaConfig });
            } else if (retries2 === 2) {
-             activeModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: schemaConfig });
+             activeModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash", generationConfig: schemaConfig });
            } else if (retries2 === 1) {
-             activeModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: schemaConfig });
+             activeModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash", generationConfig: schemaConfig });
            }
         }
         

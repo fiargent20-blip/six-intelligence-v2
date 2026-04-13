@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
         if (retries === 0) throw e;
         console.warn(`[Diagnostics] Process File API native crash: ${e.message}. Retries remaining: ${retries}`);
         
-        // Wait exponentially on 503 Server Congestion or Quota errors
+        // Wait on 503 Server Congestion or Quota errors natively
         let sleepMs = 2000;
         if (e.message?.includes("503") || e.message?.includes("High demand") || e.message?.includes("quota") || e.message?.includes("429")) {
            console.warn(`Encountered severe backend congestion/limits (${e.message}). Executing multi-cluster cascade failovers...`);
@@ -108,11 +108,11 @@ export async function POST(req: NextRequest) {
              console.warn("Cascading to 2.5-flash cluster...");
              model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: schemaConfig as any });
            } else if (retries === 2) {
-             console.warn("Cascading to isolated 1.5-pro cluster...");
-             model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: schemaConfig as any });
+             console.warn("Cascading to isolated 2.0-flash cluster...");
+             model = genAI.getGenerativeModel({ model: "gemini-2.0-flash", generationConfig: schemaConfig as any });
            } else if (retries === 1) {
-             console.warn("Cascading to isolated 1.5-flash cluster...");
-             model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: schemaConfig as any });
+             console.warn("Holding on 2.0-flash cluster...");
+             model = genAI.getGenerativeModel({ model: "gemini-2.0-flash", generationConfig: schemaConfig as any });
            }
         }
         
