@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { useParams } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
 type Tab = "summary" | "objectives" | "action" | "context" | "transcript" | "chat";
 
@@ -42,13 +43,27 @@ export default function NoteDetail() {
     setIsChatting(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg, contextObj: note })
-      });
-      const data = await response.json();
-      setChatHistory(prev => [...prev, { role: 'bot', text: data.reply }]);
+      const configRes = await fetch('/api/config');
+      const { apiKey } = await configRes.json();
+      if (!apiKey) throw new Error("Missing secure config key.");
+      
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      
+      const contextBlock = `
+        You are a highly intelligent forensic analyst assistant for "Six Intelligence".
+        You are currently helping the user analyze the following meeting context:
+        Strategic Summary: ${note?.strategicSummary}
+        Objectives: ${note?.coreObjectives?.join(", ")}
+        Transcript: ${note?.transcript?.map((l:any) => typeof l==='string'?l:(l.speaker+": "+l.text)).join("\n")}
+        
+        Answer the user's question accurately based strictly on this context. 
+        Question: ${userMsg}
+      `;
+      
+      const result = await model.generateContent(contextBlock);
+      const reply = result.response.text();
+      setChatHistory(prev => [...prev, { role: 'bot', text: reply }]);
     } catch {
       setChatHistory(prev => [...prev, { role: 'bot', text: "Secure communication error." }]);
     } finally {
@@ -105,19 +120,61 @@ export default function NoteDetail() {
         return `[${l.time || '0:00'}] ${l.speaker || 'Speaker'}: ${l.text || ''}`;
       }).join("\n");
       
-      const res = await fetch('/api/process-text', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          fullTranscriptText, 
-          language: settings?.language || "GB" 
-        })
-      });
+      const configRes = await fetch('/api/config');
+      const { apiKey } = await configRes.json();
+      if (!apiKey) throw new Error("Missing secure config key. Ensure SCRIBE_GEMINI_API_KEY is securely configured.");
       
-      const data = await res.json();
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const schemaConfig = {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: SchemaType.OBJECT,
+          properties: {
+            strategicSummary: { type: SchemaType.STRING },
+            coreObjectives: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            backgroundContext: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            actions: {
+              type: SchemaType.ARRAY,
+              items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  activity: { type: SchemaType.STRING },
+                  owner: { type: SchemaType.STRING },
+                  deadline: { type: SchemaType.STRING },
+                  status: { type: SchemaType.STRING }
+                },
+                required: ["activity", "owner", "deadline", "status"]
+              }
+            }
+          },
+          required: ["strategicSummary", "coreObjectives", "backgroundContext", "actions"]
+        }
+      };
+
+      const languageStr = settings?.language === "US" ? "American English" : "strictly British English";
       
-      if (!res.ok) {
-        throw new Error(data.error || "Retry pipeline crashed.");
+      const prompt = `
+        You are an elite enterprise intelligence extraction architect.
+        Analyze the attached meeting transcript meticulously. Extract the exact structural data according to the native response schema structure exactly.
+        Provide extremely detailed, high-fidelity synthesis spanning all core actions, holistic strategies, and risks.
+        CRITICAL INSTRUCTIONS:
+        0. Language: You MUST use ${languageStr} spelling and terminology throughout the synthesis.
+        1. Actions: Use exact keys: "activity", "owner", "deadline", "status". The "deadline" must be accurate. If no date is mentioned in the meeting, you MUST set the "deadline" property to exactly "TBA". Do not invent dates!
+
+        TRANSCRIPT TEXT:
+        ${fullTranscriptText}
+      `;
+
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash", generationConfig: schemaConfig as any });
+      const result = await model.generateContent(prompt);
+      const cleanJson = result.response.text().replace(/```json\n?|\n?```/g, '').trim();
+      
+      let data: any;
+      try { 
+         data = JSON.parse(cleanJson); 
+      } catch (e) { 
+         const match = cleanJson.match(/\{[\s\S]*\}/);
+         data = JSON.parse(match ? match[0] : "{}");
       }
       
       // Clean up the title if it contains the recovery string

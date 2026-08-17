@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
 // Mathematical Synthesizer layer for dynamically forging raw PCM16 frequency arrays into legally compliant .WAV chunks natively on the frontend RAM module.
 const float32ToWav = (samples: Float32Array, sampleRate: number): Blob => {
@@ -247,76 +248,6 @@ export default function NewMeeting() {
     }
   };
 
-  const processTextWithGemini = async (logsArray: string[], title: string, duration: string) => {
-    setIsProcessing(true);
-    const fullText = logsArray.join('\n');
-    try {
-      const response = await fetch('/api/intelligence', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawTranscriptText: fullText, language }),
-      });
-
-      if (!response.ok) {
-         const errJson = await response.json().catch(() => ({}));
-         throw new Error(errJson.error || "JSON Structuring failed on the Backend pipeline.");
-      }
-      const intelligenceData = await response.json();
-      
-      // Physically map the rolling chat logs into structurally compliant DB Transcript format 
-      // This explicitly bypasses using the LLM entirely, saving 8000+ output tokens per execution natively!
-      const mappedTranscript = logsArray.map((line, i) => ({
-         time: formatTime(i * 15),
-         speaker: "Speaker",
-         text: line.replace('[USER] ', '')
-      }));
-
-      await db.meetings.add({
-        title,
-        date: new Date().toLocaleDateString(),
-        duration,
-        createdAt: Date.now(),
-        strategicSummary: intelligenceData.strategicSummary || intelligenceData.summary,
-        coreObjectives: intelligenceData.coreObjectives,
-        backgroundContext: intelligenceData.backgroundContext,
-        transcript: mappedTranscript,
-        actions: intelligenceData.actions
-      });
-      
-      router.push("/dashboard");
-    } catch (error: any) {
-      console.error(error);
-      setFrontendDebug(error.message || "Unknown error occurred");
-      
-      const mappedTranscript = logsArray.map((line, i) => ({
-         time: formatTime(i * 15),
-         speaker: "Speaker",
-         text: line.replace('[USER] ', '')
-      }));
-
-       // Critically wrap the DB commit natively to assure the Safari IDB event-loop entirely resolves
-      db.meetings.add({ 
-        title: `${title} (Local Recovery)`, 
-        date: new Date().toLocaleDateString(), 
-        duration, 
-        createdAt: Date.now(),
-        strategicSummary: `[System Intercept Event]: Intelligence structuring failed natively (${error.message}). Scribe securely salvaged the raw semantic audio array locally into Secure Local Storage.`,
-        transcript: mappedTranscript,
-        actions: []
-      }).then(() => {
-         // Guarantee Dexie's transaction.oncomplete fires natively by yielding event loop
-         setTimeout(() => {
-           alert(`Synthesis structural logic timed out (${error.message}). Massive 60-Minute offline array successfully salvaged securely to Secure Local Storage!`);
-           window.location.href = "/dashboard"; // Use hard browser relocation to guarantee unmount wipe
-         }, 1000);
-      }).catch(err => {
-         console.error("Critical local storage failure:", err);
-         alert("CRITICAL ERROR: Chrome/Safari denied Secure Local Storage. " + err.message);
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   const stopAndSaveRecording = async () => {
     if (isRecording) {
@@ -373,6 +304,39 @@ export default function NewMeeting() {
     setIsProcessing(true);
     setUploadProgress(0);
     try {
+      const configRes = await fetch('/api/config');
+      const { apiKey } = await configRes.json();
+      if (!apiKey) throw new Error("Missing secure config key. Ensure SCRIBE_GEMINI_API_KEY is securely configured in environment.");
+      
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const schemaConfig = {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: SchemaType.OBJECT,
+          properties: {
+            strategicSummary: { type: SchemaType.STRING },
+            coreObjectives: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            backgroundContext: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            actions: {
+              type: SchemaType.ARRAY,
+              items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  activity: { type: SchemaType.STRING },
+                  owner: { type: SchemaType.STRING },
+                  deadline: { type: SchemaType.STRING },
+                  status: { type: SchemaType.STRING }
+                },
+                required: ["activity", "owner", "deadline", "status"]
+              }
+            },
+            transcript: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } }
+          },
+          required: ["strategicSummary", "coreObjectives", "backgroundContext", "actions", "transcript"]
+        }
+      };
+
+      const languageStr = language === "US" ? "American English" : "strictly British English";
       let intelligenceData: any;
       
       if (cachedLogsBypass && cachedLogsBypass.length > 0) {
@@ -380,20 +344,30 @@ export default function NewMeeting() {
         setUploadProgress(100);
         
         const fullTranscriptText = cachedLogsBypass.map(log => log.text || log).join("\n");
-        const processRes = await fetch('/api/process-text', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fullTranscriptText, language })
-        });
+        const prompt = `
+          You are an elite enterprise intelligence extraction architect.
+          Analyze the attached meeting transcript meticulously. Extract the exact structural data according to the native response schema structure exactly.
+          Provide extremely detailed, high-fidelity synthesis spanning all core actions, holistic strategies, and risks.
+          CRITICAL INSTRUCTIONS:
+          0. Language: You MUST use ${languageStr} spelling and terminology throughout the synthesis.
+          1. Actions: Use exact keys: "activity", "owner", "deadline", "status". The "deadline" must be accurate. If no date is mentioned in the meeting, you MUST set the "deadline" property to exactly "TBA". Do not invent dates!
+
+          TRANSCRIPT TEXT:
+          ${fullTranscriptText}
+        `;
+
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash", generationConfig: schemaConfig as any });
+        const result = await model.generateContent(prompt);
+        const cleanJson = result.response.text().replace(/```json\n?|\n?```/g, '').trim();
         
-        if (!processRes.ok) {
-          const errJson = await processRes.json().catch(() => ({}));
-          throw new Error(errJson.error || "Execution processing sequence failed at Text Processing Layer");
+        try { 
+           intelligenceData = JSON.parse(cleanJson); 
+        } catch (e) { 
+           const match = cleanJson.match(/\{[\s\S]*\}/);
+           intelligenceData = JSON.parse(match ? match[0] : "{}");
         }
-        intelligenceData = await processRes.json();
       } else {
         setLogs(["[SYSTEM] Negotiating massive offline payload tunnel with Google Cloud directly..."]);
-        // 1. Handshake Endpoint
         const mimeType = fileBlob.type || `audio/${extension}`;
         const urlRes = await fetch('/api/upload-url', {
           method: 'POST',
@@ -406,7 +380,7 @@ export default function NewMeeting() {
         setLogs(["[SYSTEM] Tunnel active. Slicing massive payload into secure 8MB boundary chunks..."]);
         
         let fileData = null;
-        const CHUNK_SIZE = 8 * 1024 * 1024; // REQUIRED 8MB chunk granularity enforced by Google Gemini File API
+        const CHUNK_SIZE = 8 * 1024 * 1024;
         let offset = 0;
         setUploadProgress(0);
         
@@ -437,18 +411,33 @@ export default function NewMeeting() {
         }
 
         setUploadProgress(100);
-        setLogs(["[SYSTEM] Upload verified. Executing 3.0 offline multimodal intelligence pipeline..."]);
-        const processRes = await fetch('/api/process-file', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fileUri: fileData.file.uri, mimeType: fileData.file.mimeType, language })
-        });
+        setLogs(["[SYSTEM] Upload verified. Executing 2.0 offline multimodal intelligence pipeline natively..."]);
+        
+        const prompt = `
+          You are an elite enterprise intelligence extraction architect.
+          Analyze the attached raw audio meeting meticulously. Extract the exact structural data according to the native response schema structure exactly.
+          Provide extremely detailed, high-fidelity synthesis spanning all core actions, holistic strategies, and risks.
+          
+          CRITICAL INSTRUCTIONS:
+          0. Language: You MUST use ${languageStr} spelling and terminology throughout the synthesis.
+          1. Complete Duration Parsing: You MUST listen to and parse the ENTIRE duration of this audio file from start to finish. Do not stop early or focus only on the beginning.
+          2. Smart Transcript: Extract a structured, chronological timeline of paraphrased dialogue instead of a verbatim block. Group information functionally to avoid token limits!
+          3. Actions: Use exact keys: "activity", "owner", "deadline", "status". The "deadline" must be accurate. If no date is mentioned in the meeting, you MUST set the "deadline" property to exactly "TBA". Do not invent dates!
+        `;
 
-        if (!processRes.ok) {
-          const errJson = await processRes.json().catch(() => ({}));
-          throw new Error(errJson.error || "Execution processing sequence cleanly failed at Model Layer");
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash", generationConfig: schemaConfig as any });
+        const result = await model.generateContent([
+          { fileData: { fileUri: fileData.file.uri, mimeType: fileData.file.mimeType } },
+          prompt
+        ]);
+
+        const cleanJson = result.response.text().replace(/```json\n?|\n?```/g, '').trim();
+        try { 
+           intelligenceData = JSON.parse(cleanJson); 
+        } catch (e) { 
+           const match = cleanJson.match(/\{[\s\S]*\}/);
+           intelligenceData = JSON.parse(match ? match[0] : "{}");
         }
-        intelligenceData = await processRes.json();
       }
 
       await db.meetings.add({
